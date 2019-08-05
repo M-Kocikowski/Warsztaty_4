@@ -1,47 +1,93 @@
 $(document).ready(function () {
 
-    var getDoneFunction = function (result) {
-        for (var i = 0; i < result.length; i++) {
-            var li = $('<li>' + result[i].title + '</li><div></div>');
-            li.data('id', result[i].id);
-            li.appendTo($('#allBooks'));
+    let ajaxFunction = function (bookId, method, callbackFunction) {
+
+        let url = "http://localhost:8282/books/";
+        let data = {};
+        let contentType = "application/json";
+
+        if (method === 'POST') {
+            data = JSON.stringify(bookId);
         }
-    };
 
-    var ajaxUrl = {
-        url: "http://localhost:8282/books/",
-        emptyData: {},
-        getType: "GET",
-        postType: "POST",
-        contentType: "application/json"};
-
-    $.ajax({
-        url: ajaxUrl.url,
-        type: ajaxUrl.getType,
-        contentType: ajaxUrl.contentType
-    }).done(getDoneFunction);
-
-    $('#allBooks').on('click', 'li', function () {
-
-        var bookId = $(this).data('id');
-        var bookDiv = $(this).next('div');
+        if (bookId !== null && method !== 'POST'){
+            url = url + bookId;
+        }
 
         $.ajax({
-
-            url: ajaxUrl.url + bookId,
-            type: ajaxUrl.getType,
-            contentType: ajaxUrl.contentType
-
-        }).done(function (result) {
-
-            $('#allBooks>div').hide();
-            bookDiv.text('Author(s): ' + result.author +
-                ' Title: ' + result.title +
-                ' Publisher: ' + result.publisher +
-                ' Type: ' + result.type);
-            bookDiv.hide().fadeIn(1000);
-
+            url: url,
+            method: method,
+            data: data,
+            contentType: contentType,
+            success: callbackFunction
         });
+
+    };
+
+    let buildBookList = function (data) {
+
+        let allBooks = $('#allBooks');
+        for (let i = 0; i < data.length; i++) {
+
+            let row = $('<div class="row">');
+            row.appendTo(allBooks);
+            let li = $('<div class="list-group-item list-group-item-action col-sm-3">' + data[i].title + '</div>');
+            li.data('id', data[i].id);
+            li.data('method', 'GET');
+            li.appendTo(allBooks.find('.row').last());
+
+            let a = $('<a class="list-group-item" href="#">Usuń</a>');
+            a.data('id', data[i].id);
+            a.data('method', 'DELETE');
+            a.appendTo(allBooks.find('.row').last());
+
+            let div = $('<div style="margin: 5px 0 15px" class="text-secondary"></div>');
+            div.attr("bookId", data[i].id);
+            div.insertAfter(allBooks.find('.row').last());
+        }
+        allBooks.children('div[bookid]').hide();
+    };
+
+    let getBookData = function (data) {
+
+        $('div[bookId="' + data.id + '"]').text(
+            'Author: ' + data.author +
+            ' Title: ' + data.title +
+            ' Publisher: ' + data.publisher +
+            ' Type: ' + data.type
+        )
+    };
+
+    let insertNewBook = function () {
+
+        alert("Nowa książka dodana!");
+        $('#allBooks').empty();
+        $('input[type="text"]').val('');
+        ajaxFunction(null, "GET", buildBookList);
+
+    };
+
+    let deleteBook = function(){
+
+        alert("Książka usunięta!");
+        $('#allBooks').empty();
+        ajaxFunction(null, "GET", buildBookList);
+
+    };
+
+
+    //calling functions
+    ajaxFunction(null, "GET", buildBookList);
+
+    let allBooks = $('#allBooks');
+
+    allBooks.on('click', '.col-sm-3', function () {
+
+        $('#allBooks>div[bookid]').text("").hide();
+        $('#allBooks div.list-group-item').removeClass('active');
+        ajaxFunction($(this).data('id'), $(this).data('method'), getBookData);
+        $(this).addClass('active');
+        $(this).closest('.row').next().fadeIn(1000);
 
     });
 
@@ -49,40 +95,21 @@ $(document).ready(function () {
 
         e.preventDefault();
 
-        var newBook = {
-            author:$('input[name=author]').val(),
-            title:$('input[name=title]').val(),
-            isbn:$('input[name=isbn]').val(),
-            publisher:$('input[name=publisher]').val(),
-            type:$('input[name=type]').val()
+        const newBook = {
+            author: $('input[name=author]').val(),
+            title: $('input[name=title]').val(),
+            isbn: $('input[name=isbn]').val(),
+            publisher: $('input[name=publisher]').val(),
+            type: $('input[name=type]').val()
         };
 
-        $.ajax({
+        ajaxFunction(newBook, "POST", insertNewBook);
 
-            url: ajaxUrl.url,
-            data: JSON.stringify(newBook),
-            type: ajaxUrl.postType,
-            contentType: ajaxUrl.contentType
+    });
 
-        }).done(function () {
+    allBooks.on('click', 'a', function () {
 
-            alert("Nowa książka dodana");
-            $('#allBooks').empty();
-            $('input[type=text]').val('');
-
-            $.ajax({
-
-                url: ajaxUrl.url,
-                type: ajaxUrl.getType,
-                contentType: ajaxUrl.contentType
-
-            }).done(getDoneFunction);
-
-        }).fail(function(xhr,status,err){
-
-            console.log(xhr + ', ' + status + ', ' + err);
-
-        });
+        ajaxFunction($(this).data('id'), $(this).data('method'), deleteBook);
 
     });
 

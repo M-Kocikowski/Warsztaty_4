@@ -2,31 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Books</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="js/app.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <form method="post">
-        <label>Autor:
-            <input name="author" type="text"><br>
-        </label>
-        <label>Tytuł:
-            <input name="title" type="text"><br>
-        </label>
-        <label>ISBN:
-            <input name="isbn" type="text"><br>
-        </label>
-        <label>Wydawca:
-            <input name="publisher" type="text"><br>
-        </label>
-        <label>Typ:
-            <input name="type" type="text"><br>
-        </label>
-        <input id="addBook" type="submit" value="Dodaj książkę">
-    </form>
+<form method="post">
+    <div class="form-group">
+        <label class="font-weight-bold" for="bookAuthor">Autor:</label>
+        <input class="form-control" id="bookAuthor" name="author" type="text" placeholder="Autor">
+    </div>
 
-    <ul id="allBooks"></ul>
+    <div class="form-group">
+        <label class="font-weight-bold" for="bookTitle">Tytuł:</label>
+        <input class="form-control" id="bookTitle" name="title" type="text" placeholder="Tytuł">
+    </div>
+
+    <div class="form-group">
+        <label class="font-weight-bold" for="bookIsbn">ISBN:</label>
+        <input class="form-control" id="bookIsbn" name="isbn" type="text" placeholder="ISBN">
+    </div>
+
+    <div class="form-group">
+        <label class="font-weight-bold" for="bookPublisher">Wydawca:</label>
+        <input class="form-control" id="bookPublisher" name="publisher" type="text" placeholder="Wydawca">
+    </div>
+
+    <div class="form-group">
+        <label class="font-weight-bold" for="bookType">Typ:</label>
+        <input class="form-control" id="bookType" name="type" type="text" placeholder="Typ">
+    </div>
+
+    <input class="btn btn-primary" id="addBook" type="submit" value="Dodaj książkę" data-method="POST">
+</form>
+
+<hr>
+
+<div id="allBooks" class="container-fluid list-group"></div>
 
 </body>
 </html>

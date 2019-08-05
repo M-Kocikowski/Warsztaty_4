@@ -1,0 +1,7 @@
+.form-control{
+    width: 25%;
+}
+
+body, .container-fluid{
+    margin-left: 10px;
+}
